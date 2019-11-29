@@ -6,7 +6,7 @@ BTW This is a single line comment
 OBTW This is a multiline comment
     line 2
     line 3
-TDLR
+TLDR
 
 BTW variables assignement
 I HAS A x ITZ "Three"
