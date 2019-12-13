@@ -18,17 +18,19 @@ def p_statement(p):
         | structure '''
     p[0] = p[1]
     	
-def p_statement_print(p):
-    ''' statement : PRINT expression '''
-    p[0] = AST.PrintNode(p[2])
+def p_add_op(p):
+    ''' add_op : ADD_OP NUMBER AN NUMBER'''
 
 def p_structure(p):
-    ''' structure : WHILE expression '{' programme '}' '''
+    ''' structure : WHILE CONDITION programme '''
     p[0] = AST.WhileNode([p[2],p[4]])
 
 def p_expression_op(p):
-    '''expression : expression ADD_OP expression
-            | expression MUL_OP expression'''
+    '''expression : ADD_OP expression AN expression 
+            | expression MUL_OP expression
+            | expression MOD_OP expression
+            | expression MAX_OP expression
+            | expression MIN_OP expression'''
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
     	
 def p_expression_num_or_var(p):
@@ -36,16 +38,12 @@ def p_expression_num_or_var(p):
         | IDENTIFIER '''
     p[0] = AST.TokenNode(p[1])
     	
-def p_expression_paren(p):
-    '''expression : '(' expression ')' '''
-    p[0] = p[2]
-    	
 def p_minus(p):
     ''' expression : ADD_OP expression %prec UMINUS'''
     p[0] = AST.OpNode(p[1], [p[2]])
     	
 def p_assign(p):
-    ''' assignation : IDENTIFIER '=' expression '''
+    ''' assignation : IDENTIFIER ASSIGNEMENT_SIMPLE expression '''
     p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_error(p):
