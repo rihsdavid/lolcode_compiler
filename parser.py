@@ -1,6 +1,6 @@
 import ply.yacc as yacc
 
-from lex5 import tokens
+from lex import tokens
 import AST
 
 vars = {}
@@ -10,40 +10,46 @@ def p_programme_statement(p):
     p[0] = AST.ProgramNode(p[1])
 
 def p_programme_recursive(p):
-    ''' programme : statement ';' programme '''
-    p[0] = AST.ProgramNode([p[1]]+p[3].children)
+    ''' programme : statement programme '''
+    p[0] = AST.ProgramNode([p[1]]+p[2].children)
 
 def p_statement(p):
     ''' statement : assignation
-        | structure '''
+        | expression'''
     p[0] = p[1]
-    	
-def p_add_op(p):
-    ''' add_op : ADD_OP NUMBER AN NUMBER'''
 
-def p_structure(p):
-    ''' structure : WHILE CONDITION programme '''
-    p[0] = AST.WhileNode([p[2],p[4]])
+def p_commentary(p):
+    ''' expression : expression SL_COMMENT'''
+    p[0] = AST.CommentNode([p[1],p[2]])
+
+def p_expression(p):
+    '''expression : expression_num '''
+#    | expression_bool'''
+    p[0] = p[1]
 
 def p_expression_op(p):
-    '''expression : ADD_OP expression AN expression 
-            | expression MUL_OP expression
-            | expression MOD_OP expression
-            | expression MAX_OP expression
-            | expression MIN_OP expression'''
+    '''expression_num : ADD_OP expression_num AN expression_num 
+            | expression_num MUL_OP expression_num
+            | expression_num MOD_OP expression_num
+            | expression_num MAX_OP expression_num
+            | expression_num MIN_OP expression_num'''
     p[0] = AST.OpNode(p[2], [p[1], p[3]])
     	
 def p_expression_num_or_var(p):
-    '''expression : NUMBER
+    '''expression_num : NUMBER
         | IDENTIFIER '''
     p[0] = AST.TokenNode(p[1])
-    	
-def p_minus(p):
-    ''' expression : ADD_OP expression %prec UMINUS'''
-    p[0] = AST.OpNode(p[1], [p[2]])
-    	
+
+#def p_expression_bool_or_var(p):
+#    '''expression_bool : BOOL'''
+#    p[0] = AST.TokenNode(p[1])
+    		
+def p_declaration(p):
+    ''' assignation : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression '''
+    p[0] = AST.AssignNode([AST.TokenNode(p[2]),p[4]])
+
 def p_assign(p):
-    ''' assignation : IDENTIFIER ASSIGNEMENT_SIMPLE expression '''
+    ''' assignation : IDENTIFIER ASSIGNEMENT_SIMPLE expression'''
     p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_error(p):
@@ -51,14 +57,8 @@ def p_error(p):
         print ("Syntax error in line %d" % p.lineno)
         yacc.errok()
     else:
-        print ("Sytax error: unexpected end of file!")
+        print ("Syntax error: unexpected end of file!")
 
-
-precedence = (
-    ('left', 'ADD_OP'),
-    ('left', 'MUL_OP'),
-    ('right', 'UMINUS'),  
-)
 
 def parse(program):
     return yacc.parse(program)
