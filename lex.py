@@ -123,7 +123,7 @@ def t_END_LOOP(t):
 # Comparison
 def t_COMP(t):
 	r'BOTH[ ]SAEM|DIFFRINT'
-	t.value = '=' if t.value == 'BOTH SAEM' else '!'
+	t.value = '==' if t.value == 'BOTH SAEM' else '!='
 	return t
 
 # Identifier
