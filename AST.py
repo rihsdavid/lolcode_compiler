@@ -135,7 +135,35 @@ class OpNode(Node):
         
     def __repr__(self):
         return "%s (%s)" % (self.op, self.nbargs)
-    
+
+class IncOpNode(Node):
+    def __init__(self, op, children):
+        Node.__init__(self,children)
+        self.op = op
+        
+    def __repr__(self):
+        return str(self.op)
+
+class CompNode(Node):
+    def __init__(self, op, children):
+        Node.__init__(self,children)
+        self.op = op
+        
+    def __repr__(self):
+        return str(self.op)
+
+class BoolOpNode(Node):
+    def __init__(self, op, children):
+        Node.__init__(self,children)
+        self.op = op
+        try:
+            self.nbargs = len(children)
+        except AttributeError:
+            self.nbargs = 1
+        
+    def __repr__(self):
+        return "%s (%s)" % (self.op, self.nbargs)
+
 class DeclarationNode(Node):
     type = 'int'
 
@@ -147,6 +175,18 @@ class PrintNode(Node):
     
 class WhileNode(Node):
     type = 'while'
+
+class ForNode(Node):
+    type = 'for'
+    def __init__(self, inc, children):
+        Node.__init__(self,children)
+        self.inc = inc
+    
+    def __repr__(self):
+        return "For (%s)" % self.inc
+
+class IfNode(Node):
+    type = 'if'
     
 class EntryNode(Node):
     type = 'ENTRY'

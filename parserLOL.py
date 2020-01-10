@@ -16,12 +16,12 @@ def p_programme_recursive(p):
 def p_statement(p):
     ''' statement : assignation
         | expression
-        | comment'''
+        | structure'''
     p[0] = p[1]
 
 def p_commentary(p):
-    ''' expression : expression SL_COMMENT
-    | expression ML_COMMENT'''
+    ''' comment : statement SL_COMMENT
+    | statement ML_COMMENT'''
     p[0] = AST.CommentNode([p[1],AST.StringNode(p[2])])
 
 def p_commentary_alone(p):
@@ -44,7 +44,7 @@ def p_expression_op(p):
 
 def p_increment_op(p):
     '''expression_num : INC_OP expression_num'''
-    p[0] = AST.OpNode(p[1], [p[2]])
+    p[0] = AST.IncOpNode(p[1], [p[2]])
     	
 def p_expression_num_or_var(p):
     '''expression_num : NUMBER
@@ -57,15 +57,15 @@ def p_expression_bool(p):
 
 def p_bool_op(p):
     '''expression_bool : BOOL_OP expression_bool AN expression_bool'''
-    p[0] = AST.OpNode(p[1], [p[2], p[4]])
+    p[0] = AST.BoolOpNode(p[1], [p[2], p[4]])
 
 def p_bool_not(p):
     '''expression_bool : NOT expression_bool'''
-    p[0] = AST.OpNode(p[1], [p[2]])
+    p[0] = AST.BoolOpNode(p[1], [p[2]])
 
 def p_comp(p):
     '''expression_bool : COMP expression AN expression'''
-    p[0] = AST.OpNode(p[1], [p[2],p[4]])
+    p[0] = AST.CompNode(p[1], [p[2],p[4]])
     		
 def p_declaration(p):
     ''' assignation : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression '''
@@ -78,6 +78,23 @@ def p_assign(p):
 def p_newLine(p):
     ''' new_line : NL'''
     p[0] = AST.NlNode(p[1])
+
+def p_while(p):
+    ''' structure : WHILE expression_bool programme END_LOOP'''
+    p[0] = AST.WhileNode([p[2],p[3]])  
+
+def p_for(p):
+    ''' structure : FOR expression_num programme END_LOOP'''
+    p[0] = AST.ForNode(p[1],[p[2],p[3]])
+
+def p_if(p):
+    ''' structure : expression_bool COMP IF IF_TRUE programme IF_END '''
+    p[0] = AST.IfNode([p[1],p[5]])
+
+def p_ifElse(p):
+    ''' structure : expression_bool COMP IF IF_TRUE programme IF_FALSE programme IF_END'''
+    p[0] = AST.IfNode([p[1],p[5], p[7]])
+
 
 def p_error(p):
     if p:

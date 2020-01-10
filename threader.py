@@ -22,6 +22,7 @@ def thread(tree):
     tree.thread(entry)
     return entry
 
+
 if __name__ == "__main__":
     from parser5 import parse
     import sys, os
