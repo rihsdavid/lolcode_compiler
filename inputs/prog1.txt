@@ -1,0 +1,19 @@
+BTW Programme de test
+
+I HAS A i ITZ 0
+I HAS A a ITZ 10
+
+IM IN YR LOOP WILE DIFFRINT i AN a
+	BOTH SAEM i AN 8
+	O RLY?
+		YA RLY
+		GTFO
+	OIC
+	
+	UPPIN i	
+IM OUTTA YR LOOP
+
+i R 0
+IM IN YR LOOP UPPIN YR i TIL a
+	a R a - i
+IM OUTTA YR LOOP
