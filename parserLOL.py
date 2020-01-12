@@ -15,24 +15,27 @@ def p_programme_recursive(p):
 
 def p_statement(p):
     ''' statement : assignation
+        | declaration
         | expression
-        | structure'''
+        | structure
+        | comment'''
     p[0] = p[1]
 
     
 def p_statement_break(p):
-    '''statement : BREAK'''
+    '''statement : BREAK
+       | BREAK new_line'''
     p[0] = AST.BreakNode()
 
 def p_commentary(p):
-    ''' comment : statement SL_COMMENT
-    | statement ML_COMMENT'''
-    p[0] = AST.CommentNode([p[1],AST.StringNode(p[2])])
+    ''' comment : statement SL_COMMENT new_line
+    | statement ML_COMMENT new_line'''
+    p[0] = AST.CommentNode([p[1],AST.StringNode(p[2]), p[3]])
 
 def p_commentary_alone(p):
-    '''comment : SL_COMMENT
-    | ML_COMMENT'''
-    p[0] = AST.CommentNode(AST.StringNode(p[1]))
+    '''comment : SL_COMMENT new_line
+    | ML_COMMENT new_line'''
+    p[0] = AST.CommentNode([AST.StringNode(p[1]),p[2]])
 
 def p_expression(p):
     '''expression : expression_num
@@ -44,66 +47,88 @@ def p_expression_op(p):
             | MUL_OP expression_num AN expression_num
             | MOD_OP expression_num AN expression_num
             | MAX_OP expression_num AN expression_num
-            | MIN_OP expression_num AN expression_num'''
+            | MIN_OP expression_num AN expression_num
+            | ADD_OP expression_num AN expression_num new_line
+            | MUL_OP expression_num AN expression_num new_line
+            | MOD_OP expression_num AN expression_num new_line
+            | MAX_OP expression_num AN expression_num new_line
+            | MIN_OP expression_num AN expression_num new_line'''
     p[0] = AST.OpNode(p[1], [p[2], p[4]])
 
 def p_increment_op(p):
-    '''expression_num : INC_OP expression_num'''
+    '''expression_num : INC_OP expression_num 
+       | INC_OP expression_num new_line'''
     p[0] = AST.IncOpNode(p[1], [p[2]])
     	
 def p_expression_num_or_var(p):
     '''expression_num : NUMBER
-        | IDENTIFIER '''
+        | IDENTIFIER 
+        | NUMBER new_line
+        | IDENTIFIER new_line'''
     p[0] = AST.TokenNode(p[1])
 
 def p_expression_bool(p):
-    '''expression_bool : BOOL'''
+    '''expression_bool : BOOL
+       | BOOL new_line'''
     p[0] = AST.TokenNode(p[1])
 
 def p_bool_op(p):
-    '''expression_bool : BOOL_OP expression_bool AN expression_bool'''
+    '''expression_bool : BOOL_OP expression_bool AN expression_bool
+       | BOOL_OP expression_bool AN expression_bool new_line'''
     p[0] = AST.BoolOpNode(p[1], [p[2], p[4]])
 
 def p_bool_not(p):
-    '''expression_bool : NOT expression_bool'''
+    '''expression_bool : NOT expression_bool
+       | NOT expression_bool new_line'''
     p[0] = AST.BoolOpNode(p[1], [p[2]])
 
 def p_comp(p):
-    '''expression_bool : COMP expression AN expression'''
+    '''expression_bool : COMP expression_num AN expression_num
+       | COMP expression_num AN expression_num new_line'''
     p[0] = AST.CompNode(p[1], [p[2],p[4]])
     		
 def p_declaration(p):
-    ''' assignation : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression '''
-    p[0] = AST.AssignNode([AST.TokenNode(p[2]),p[4]])
+    ''' assignation : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression
+        | DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression new_line'''
+    p[0] = AST.DeclarationNode([AST.TokenNode(p[2]),p[4]])
 
 def p_assign(p):
-    ''' assignation : IDENTIFIER ASSIGNEMENT_SIMPLE expression'''
+    ''' assignation : IDENTIFIER ASSIGNEMENT_SIMPLE expression
+        | IDENTIFIER ASSIGNEMENT_SIMPLE expression new_line'''
     p[0] = AST.AssignNode([AST.TokenNode(p[1]),p[3]])
 
 def p_newLine(p):
     ''' new_line : NL'''
     p[0] = AST.NlNode(p[1])
 
+def p_multipleNewLine(p):
+    ''' new_line : NL NL'''
+    p[0] = AST.NlNode(p[1])
+
 def p_while(p):
-    ''' structure : WHILE expression_bool programme END_LOOP'''
+    ''' structure : WHILE expression_bool programme END_LOOP 
+        | WHILE expression_bool programme END_LOOP new_line'''
     p[0] = AST.WhileNode([p[2],p[3]])  
 
 def p_for(p):
-    ''' structure : FOR expression_num UNTIL expression_num programme END_LOOP'''
+    ''' structure : FOR expression_num UNTIL expression_num programme END_LOOP
+        | FOR expression_num UNTIL expression_num programme END_LOOP new_line'''
     p[0] = AST.ForNode(p[1],[p[2],p[4], p[5]])
 
 def p_if(p):
-    ''' structure : expression_bool IF IF_TRUE programme IF_END '''
-    p[0] = AST.IfNode([p[1],p[4]])
+    ''' structure : expression_bool IF new_line IF_TRUE new_line programme IF_END
+        | expression_bool IF new_line IF_TRUE new_line programme IF_END new_line'''
+    p[0] = AST.IfNode([p[1],p[6]])
 
 def p_ifElse(p):
-    ''' structure : expression_bool IF IF_TRUE programme IF_FALSE programme IF_END'''
-    p[0] = AST.IfNode([p[1],p[4], p[6]])
+    ''' structure : expression_bool IF new_line IF_TRUE new_line programme IF_FALSE new_line programme IF_END
+        | expression_bool IF new_line IF_TRUE new_line programme IF_FALSE new_line programme IF_END new_line'''
+    p[0] = AST.IfNode([p[1],p[6], p[9]])
 
 def p_error(p):
     if p:
         print ("Syntax error in line %d" % p.lineno)
-        yacc.errok()
+        yacc.yacc().errok()
     else:
         print ("Syntax error: unexpected end of file!")
 

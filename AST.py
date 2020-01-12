@@ -104,7 +104,7 @@ class NlNode(Node):
         self.tok = tok
         
     def __repr__(self):
-        return repr("New line" + str(self.tok))
+        return repr("New line (%s)" % (str(self.tok)))
     
 class StringNode(Node):
     type = 'string'
