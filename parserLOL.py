@@ -19,6 +19,11 @@ def p_statement(p):
         | structure'''
     p[0] = p[1]
 
+    
+def p_statement_break(p):
+    '''statement : BREAK'''
+    p[0] = AST.BreakNode()
+
 def p_commentary(p):
     ''' comment : statement SL_COMMENT
     | statement ML_COMMENT'''
@@ -84,17 +89,16 @@ def p_while(p):
     p[0] = AST.WhileNode([p[2],p[3]])  
 
 def p_for(p):
-    ''' structure : FOR expression_num TIL expression_num programme END_LOOP'''
+    ''' structure : FOR expression_num UNTIL expression_num programme END_LOOP'''
     p[0] = AST.ForNode(p[1],[p[2],p[4], p[5]])
 
 def p_if(p):
-    ''' structure : expression_bool COMP IF IF_TRUE programme IF_END '''
-    p[0] = AST.IfNode([p[1],p[5]])
+    ''' structure : expression_bool IF IF_TRUE programme IF_END '''
+    p[0] = AST.IfNode([p[1],p[4]])
 
 def p_ifElse(p):
-    ''' structure : expression_bool COMP IF IF_TRUE programme IF_FALSE programme IF_END'''
-    p[0] = AST.IfNode([p[1],p[5], p[7]])
-
+    ''' structure : expression_bool IF IF_TRUE programme IF_FALSE programme IF_END'''
+    p[0] = AST.IfNode([p[1],p[4], p[6]])
 
 def p_error(p):
     if p:

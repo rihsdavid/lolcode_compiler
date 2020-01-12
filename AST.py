@@ -192,6 +192,9 @@ class EntryNode(Node):
     type = 'ENTRY'
     def __init__(self):
         Node.__init__(self, None)
+
+class BreakNode(Node):
+    type="break"
     
 def addToClass(cls):
     ''' D�corateur permettant d'ajouter la fonction d�cor�e en tant que m�thode
