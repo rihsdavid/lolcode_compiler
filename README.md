@@ -37,41 +37,41 @@ BTW Conditional
 BOTH SAEM x AN y
 O RLY?
     YA RLY
-    ...
+    BTW ...
     NO WAI
-    ...
+    BTW ...
 OIC
 
 BTW While
 IM IN YR LOOP WILE BOTH SAEM x AN y
-    ...
+    BTW ...
     GTFO
 IM OUTTA YR LOOP
 
 BTW For
 IM IN YR LOOP UPPIN YR x TIL y
-    ...
+    BTW ...
 IM OUTTA YR LOOP
 
 IM IN YR LOOP NERFIN YR x TIL y
-    ...
+    BTW ...
 IM OUTTA YR LOOP
 ```
 
 ### Python
 ```
-// This is a single line comment
-/* This is a multiline comment
-    line 2
-    line 3
-*/
+# This is a single line comment
+# This is a multiline comment
+#    line 2
+#    line 3
+#
 
-// variables assignement
+# variables assignement
 x = "Three"
 y = 2
 x = 3
 
-// Mathematics operator
+# Mathematics operator
 x + y
 x - y
 x * y 
@@ -82,30 +82,30 @@ min(x, y)
 x+=1
 x-=1
 
-// Boolean operator
+# Boolean operator
 False and True
 False or True
 Not True
 
-// Comparison
+# Comparison
 x == y
 x != y
 
-// Conditional
+# Conditional
 if x==y:
-    ...
+    # ...
 else:
-    ...
+    # ...
 
-// While loop
+# While loop
 while x == y :
-    ...
+    # ...
     break
 
-// For loop
+# For loop
 for x in range(x, y, 1):
-    ...
+    # ...
     
 for x in range(x, y, -1):
-    ...
+    # ...
 ```
