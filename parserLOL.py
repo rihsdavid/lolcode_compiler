@@ -30,12 +30,12 @@ def p_statement_break(p):
 def p_commentary(p):
     ''' comment : statement SL_COMMENT new_line
     | statement ML_COMMENT new_line'''
-    p[0] = AST.CommentNode([p[1],AST.StringNode(p[2]), p[3]])
+    p[0] = AST.CommentNode([p[1],AST.StringNode(p[2])])
 
 def p_commentary_alone(p):
     '''comment : SL_COMMENT new_line
     | ML_COMMENT new_line'''
-    p[0] = AST.CommentNode([AST.StringNode(p[1]),p[2]])
+    p[0] = AST.CommentNode([AST.StringNode(p[1])])
 
 def p_expression(p):
     '''expression : expression_num
@@ -131,7 +131,6 @@ def p_error(p):
         yacc.yacc().errok()
     else:
         print ("Syntax error: unexpected end of file!")
-
 
 def parse(program):
     return yacc.parse(program)

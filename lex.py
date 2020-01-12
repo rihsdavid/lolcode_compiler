@@ -90,7 +90,7 @@ def t_BOOL(t):
 
 def t_BOOL_OP(t):
 	r'(BOTH|EITHER)[ ]OF'
-	t.value = '&' if t.value == 'BOTH OF' else '|'
+	t.value = 'and' if t.value == 'BOTH OF' else 'or'
 	return t
 
 # If
@@ -113,7 +113,7 @@ def t_WHILE(t):
 
 def t_FOR(t):
 	r'IM[ ]IN[ ]YR[ ]LOOP[ ](UPPIN|NERFIN)[ ]YR'
-	t.value = '+' if t == 'IM IN YR LOOP UPPIN YR' else '-'
+	t.value = '+' if t.value == 'IM IN YR LOOP UPPIN YR' else '-'
 	return t
 
 def t_END_LOOP(t):

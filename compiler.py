@@ -29,84 +29,157 @@ whilecounter.current = 0
 # retourne la suite d'opcodes de tous les enfants
 @addToClass(AST.ProgramNode)
 def compile(self):
-	bytecode = ""
+	resultPython = ""
 	for c in self.children:
-		bytecode += c.compile()
-	return bytecode
+		resultPython += c.compile()
+	return resultPython
+
+# Commentaire
+@addToClass(AST.CommentNode)
+def compile(self):
+	resultPython = ""
+	comment = None
+	if(len(self.children) == 2) :
+		resultPython += self.children[0].compile()
+		comment = self.children[1].compile()
+	else :
+		comment = self.children[0].compile()
+
+	# Multiple line comment
+	if(comment[0] == "O") :
+		resultPython += "#" + comment[4:-4].replace("\n", "\n#")[:-1]
+	# Single line comment
+	else:
+		resultPython += "#" + comment[3:] + "\n"
+	
+	return resultPython
+
 
 # noeud terminal
-# si c'est une variable : empile la valeur de la variable
-# si c'est une constante : empile la constante
 @addToClass(AST.TokenNode)
 def compile(self):
-	bytecode = ""
-	if isinstance(self.tok, str):
-		bytecode += "PUSHV %s\n" % self.tok
+	return str(self.tok)
+
+@addToClass(AST.StringNode)
+def compile(self):
+	return self.tok
+
+# Opération arithmétique binaire
+@addToClass(AST.OpNode)
+def compile(self):
+	resultPython = ""
+	# modulo, min, max
+	if(len(self.op) > 1) :
+		if(self.op == "MOD OF") :
+			resultPython += self.children[0].compile() + " % " + self.children[1].compile()
+		elif(self.op == "BIGGR OF") :
+			resultPython += "max(" + self.children[0].compile() + "," + self.children[1].compile() + ")"
+		elif(self.op == "SMALLR OF") :	
+			resultPython += "min(" + self.children[0].compile() + "," + self.children[1].compile() + ")"
+	# +, -, *, /
 	else:
-		bytecode += "PUSHC %s\n" % self.tok
-	return bytecode
+		resultPython += self.children[0].compile()
+		resultPython += self.op
+		resultPython += self.children[1].compile()
 	
+	return resultPython + "\n"
+
+# Opération incrémentale (unaire)
+@addToClass(AST.IncOpNode)
+def compile(self):
+	return self.children[0].tok + " " + self.op + "= 1\n"
+
+# Opération de comparaison
+@addToClass(AST.CompNode)
+def compile(self):
+	resultPython = ""
+	resultPython += self.children[0].compile()
+	resultPython += " " + self.op + " "
+	resultPython += self.children[1].compile()
+	
+	return resultPython + "\n"
+
+# Opération booleen
+@addToClass(AST.BoolOpNode)
+def compile(self):
+	resultPython = ""
+	# not
+	if(len(self.children) == 1) :
+		resultPython += "not "
+		resultPython += "True" if self.children[0].tok == '0' else "False"
+	# and, or
+	else:
+		resultPython += "True" if self.children[0].tok == '0' else "False"
+		resultPython += " " + self.op + " "
+		resultPython += "True" if self.children[1].tok == '0' else "False"
+	return resultPython + "\n"
+
 # noeud d'assignation de variable
 # exécute le noeud à droite du signe =
 # dépile un élément et le met dans ID
 @addToClass(AST.AssignNode)
 def compile(self):
-	bytecode = ""
-	bytecode += self.children[1].compile()
-	bytecode += "SET %s\n" % self.children[0].tok
-	return bytecode
-	
-# noeud d'affichage
-# exécute le noeud qui suit le PRINT
-# dépile un élément et l'affiche
-@addToClass(AST.PrintNode)
+	resultPython = ""
+	resultPython += self.children[0].tok + " = "
+	resultPython += self.children[1].compile() + "\n"
+	return resultPython
+
+# noeud d'assignation de variable
+# exécute le noeud à droite du signe =
+# dépile un élément et le met dans ID
+@addToClass(AST.DeclarationNode)
 def compile(self):
-	bytecode = ""
-	bytecode += self.children[0].compile()
-	bytecode += "PRINT\n"
-	return bytecode
-	
-# noeud d'opération arithmétique
-# si c'est une opération unaire (nombre négatif), empile le nombre et l'inverse
-# si c'est une opération binaire, empile les enfants puis l'opération
-@addToClass(AST.OpNode)
-def compile(self):
-	bytecode = ""
-	if len(self.children) == 1:
-		bytecode += self.children[0].compile()
-		bytecode += "USUB\n"
-	else:
-		for c in self.children:
-			bytecode += c.compile()
-		bytecode += operations[self.op] + "\n"
-	return bytecode
-	
+	resultPython = ""
+	resultPython += self.children[0].tok + " = "
+	resultPython += self.children[1].compile() + "\n"
+	return resultPython
+
 # noeud de boucle while
-# saute au label de la condition défini plus bas
-# insère le label puis le corps du body
-# insère le label puis le corps de la condition
-# réalise un saut conditionnel sur le résultat de la condition (empilé)
 @addToClass(AST.WhileNode)
 def compile(self):
-	counter = whilecounter()
-	bytecode = ""
-	bytecode += "JMP cond%s\n" % counter
-	bytecode += "body%s: " % counter
-	bytecode += self.children[1].compile()
-	bytecode += "cond%s: " % counter
-	bytecode += self.children[0].compile()
-	bytecode += "JINZ body%s\n" % counter
-	return bytecode
-	
+	resultPython = "while "
+	resultPython += self.children[0].compile()[:-1] + " :\n"
+	block = self.children[1].compile()
+	resultPython += "\t" + block.replace("\n", "\n\t")[:-1]
+	return resultPython
+
+# noeud de boucle if
+@addToClass(AST.IfNode)
+def compile(self):
+	resultPython = "if "
+	resultPython += self.children[0].compile()[:-1] + " :\n"
+	blockIf= self.children[1].compile()
+	resultPython += "\t" + blockIf.replace("\n", "\n\t")[:-1]
+	# test if "else" exist
+	if(len(self.children) == 3):
+		blockElse = self.children[2].compile()
+		resultPython += "else :\n\t" + blockElse.replace("\n", "\n\t")[:-1]
+	return resultPython
+
+# noeud de boucle for
+@addToClass(AST.ForNode)
+def compile(self):
+	resultPython = "for " + self.value + " in range(" + self.value + ", "
+	resultPython += self.until.compile() + ", "
+	resultPython += "1" if self.inc == "+" else "-1"
+	resultPython += ") :\n"
+	block = self.children[0].compile()
+	resultPython += "\t" + block.replace("\n", "\n\t")[:-1]
+	return resultPython
+
+@addToClass(AST.BreakNode)
+def compile(self):
+	return "break\n"
+
 if __name__ == "__main__":
-    from parser5 import parse
-    import sys, os
-    prog = open(sys.argv[1]).read()
-    ast = parse(prog)
+	from parserLOL import parse
+	import sys, os
+	prog = open(sys.argv[1]).read()
+	ast = parse(prog)
 	print(ast)
-    compiled = ast.compile()
-    name = os.path.splitext(sys.argv[1])[0]+'.vm'    
-    outfile = open(name, 'w')
-    outfile.write(compiled)
-    outfile.close()
-    print ("Wrote output to", name)
+	compiled = ast.compile()
+	name = "result.py"   
+	outfile = open(name, 'w')
+	outfile.write(compiled)
+	outfile.close()
+	print ("Wrote output to", name)
