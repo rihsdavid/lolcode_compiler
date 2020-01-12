@@ -2,7 +2,7 @@ import ply.lex as lex
 
 tokens = (
 	'SL_COMMENT','ML_COMMENT',
-	'NUMBER', 'STRING',
+	'NUMBER',
 	'ADD_OP', 'MUL_OP',	'MOD_OP', 'MAX_OP', 'MIN_OP', 'INC_OP',
 	'DECLARATION', 'ASSIGNEMENT_DECL', 'ASSIGNEMENT_SIMPLE',
 	'BOOL', 'BOOL_OP', 'NOT',
@@ -36,10 +36,6 @@ def t_ML_COMMENT(t):
 	return t
 
 # Types
-def t_STRING(t):
-	r'".*"'
-	return t
-
 def t_NUMBER(t):
 	r'\d+(\.\d+)?'
 	try:

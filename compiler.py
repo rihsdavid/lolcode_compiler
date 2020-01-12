@@ -128,6 +128,7 @@ def compile(self):
 		resultPython += self.children[0].compile() + " = "
 	except:
 		vars[self.children[0].tok] = self.children[1].compile()
+		resultPython += self.children[0].compile() + " = "
 	resultPython += self.children[1].compile() + "\n"
 	return resultPython
 

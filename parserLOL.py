@@ -20,7 +20,6 @@ def p_statement(p):
         | structure
         | comment'''
     p[0] = p[1]
-
     
 def p_statement_break(p):
     '''statement : BREAK
