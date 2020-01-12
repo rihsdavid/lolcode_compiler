@@ -2,17 +2,9 @@
 import AST
 from AST import addToClass
 
-# opcodes de la SVM
-#    PUSHC <val>     pushes the constant <val> on the stack
-#    PUSHV <id>      pushes the value of identifier <id> on the stack
-#    SET <id>        pops a value from the top of stack and sets <id>
-#    PRINT           pops a value from the top of stack and print it
-#    ADD,SUB,DIV,MUL pops 2 values from the top of stack and compute them
-#    USUB            changes the sign of the number on the top of stack
-#    JMP <tag>       jump to :<tag>
-#    JIZ,JINZ <tag>  pops a value from the top of stack and jump to :<tag> if (not) zero
+vars = dict()
 
-# chaque opération correspond à son instruction d'exécution de la machine SVM
+# chaque opération correspond à son instruction en python
 operations = {
 	'+' : 'ADD',
 	'-' : 'SUB',
@@ -58,6 +50,8 @@ def compile(self):
 # noeud terminal
 @addToClass(AST.TokenNode)
 def compile(self):
+	if(isinstance(self.tok, str) and self.tok not in vars.keys()):
+		raise Exception("Var %s wasn't assigned before using it" % self.tok)
 	return str(self.tok)
 
 @addToClass(AST.StringNode)
@@ -130,7 +124,10 @@ def compile(self):
 @addToClass(AST.DeclarationNode)
 def compile(self):
 	resultPython = ""
-	resultPython += self.children[0].tok + " = "
+	try:
+		resultPython += self.children[0].compile() + " = "
+	except:
+		vars[self.children[0].tok] = self.children[1].compile()
 	resultPython += self.children[1].compile() + "\n"
 	return resultPython
 
