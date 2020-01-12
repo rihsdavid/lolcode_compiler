@@ -14,6 +14,7 @@ tokens = (
 	'IDENTIFIER'
 )
 
+# Permet de directement traité les mots simples
 oneWordReserved = {
 	'NOT'  : 'NOT',
 	'AN'   : 'AN',
