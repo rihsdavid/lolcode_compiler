@@ -178,12 +178,14 @@ class WhileNode(Node):
 
 class ForNode(Node):
     type = 'for'
-    def __init__(self, inc, children):
+    def __init__(self, inc, value, until, children):
         Node.__init__(self,children)
         self.inc = inc
+        self.value = value
+        self.until = until
     
     def __repr__(self):
-        return "For (%s)" % self.inc
+        return "For (%s, %s, %s)" % (self.inc, self.value, self.until)
 
 class IfNode(Node):
     type = 'if'

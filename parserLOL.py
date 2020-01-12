@@ -88,7 +88,7 @@ def p_comp(p):
     p[0] = AST.CompNode(p[1], [p[2],p[4]])
     		
 def p_declaration(p):
-    ''' assignation : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression
+    ''' declaration : DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression
         | DECLARATION IDENTIFIER ASSIGNEMENT_DECL expression new_line'''
     p[0] = AST.DeclarationNode([AST.TokenNode(p[2]),p[4]])
 
@@ -113,7 +113,7 @@ def p_while(p):
 def p_for(p):
     ''' structure : FOR expression_num UNTIL expression_num programme END_LOOP
         | FOR expression_num UNTIL expression_num programme END_LOOP new_line'''
-    p[0] = AST.ForNode(p[1],[p[2],p[4], p[5]])
+    p[0] = AST.ForNode(p[1],p[2],p[4], [p[5]])
 
 def p_if(p):
     ''' structure : expression_bool IF new_line IF_TRUE new_line programme IF_END
