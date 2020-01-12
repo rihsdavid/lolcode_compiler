@@ -111,8 +111,8 @@ def p_while(p):
     p[0] = AST.WhileNode([p[2],p[3]])  
 
 def p_for(p):
-    ''' structure : FOR expression_num UNTIL expression_num programme END_LOOP
-        | FOR expression_num UNTIL expression_num programme END_LOOP new_line'''
+    ''' structure : FOR IDENTIFIER UNTIL expression_num programme END_LOOP
+        | FOR IDENTIFIER UNTIL expression_num programme END_LOOP new_line'''
     p[0] = AST.ForNode(p[1],p[2],p[4], [p[5]])
 
 def p_if(p):
