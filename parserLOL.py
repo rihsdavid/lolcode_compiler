@@ -1,6 +1,14 @@
-import ply.yacc as yacc
+#!/usr/bin/env python
+# coding=utf-8
 
+""" Construit l'arbre syntaxique """
+
+import ply.yacc as yacc
 from lex import tokens
+
+__author__  = "Tristan Seuret, David Rihs"
+__version__ = "1.0.0"
+
 import AST
 
 # Ensemble global

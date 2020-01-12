@@ -1,22 +1,16 @@
+#!/usr/bin/env python
 # coding=utf-8
+
+""" Traduit l'arbre syntaxique en language python """
 
 import AST
 from AST import addToClass
 
+__author__  = "Tristan Seuret, David Rihs"
+__version__ = "1.0.0"
+
+# Stocke les variables qui ont été déclarées
 vars = dict()
-
-# chaque opération correspond à son instruction en python
-operations = {
-	'+' : 'ADD',
-	'-' : 'SUB',
-	'*' : 'MUL',
-	'/' : 'DIV'
-}
-
-def whilecounter():
-	whilecounter.current += 1
-	return whilecounter.current
-whilecounter.current = 0
 
 # noeud de programme
 # retourne la suite d'opcodes de tous les enfants
@@ -38,28 +32,28 @@ def compile(self):
 	else :
 		comment = self.children[0].compile()
 
-	# Multiple line comment
+	# Commentaire multiligne "OBTW ... TLDR"
 	if(comment[0] == "O") :
 		resultPython += "#" + comment[4:-4].replace("\n", "\n#")[:-1]
-	# Single line comment
+	# Commentaire monoligne "BTW ... "
 	else:
 		resultPython += "#" + comment[3:] + "\n"
 	
 	return resultPython
 
-
-# noeud terminal
+# Variable ou nombre
 @addToClass(AST.TokenNode)
 def compile(self):
 	if(isinstance(self.tok, str) and self.tok not in vars.keys()):
 		raise Exception("Var %s wasn't assigned before using it" % self.tok)
 	return str(self.tok)
 
+# Chaîne de caractères
 @addToClass(AST.StringNode)
 def compile(self):
 	return self.tok
 
-# Opération arithmétique binaire
+# Opérations arithmétiques binaires
 @addToClass(AST.OpNode)
 def compile(self):
 	resultPython = ""
@@ -79,12 +73,12 @@ def compile(self):
 	
 	return resultPython + "\n"
 
-# Opération incrémentale (unaire)
+# Opérations incrémentales (unaire)
 @addToClass(AST.IncOpNode)
 def compile(self):
 	return self.children[0].tok + " " + self.op + "= 1\n"
 
-# Opération de comparaison
+# Opérations de comparaisons (==, !=)
 @addToClass(AST.CompNode)
 def compile(self):
 	resultPython = ""
@@ -94,7 +88,7 @@ def compile(self):
 	
 	return resultPython + "\n"
 
-# Opération booleen
+# Opérations booleens
 @addToClass(AST.BoolOpNode)
 def compile(self):
 	resultPython = ""
@@ -109,9 +103,7 @@ def compile(self):
 		resultPython += "True" if self.children[1].tok == '0' else "False"
 	return resultPython + "\n"
 
-# noeud d'assignation de variable
-# exécute le noeud à droite du signe =
-# dépile un élément et le met dans ID
+# Assignation de variable
 @addToClass(AST.AssignNode)
 def compile(self):
 	resultPython = ""
@@ -119,9 +111,7 @@ def compile(self):
 	resultPython += self.children[1].compile() + "\n"
 	return resultPython
 
-# noeud d'assignation de variable
-# exécute le noeud à droite du signe =
-# dépile un élément et le met dans ID
+# Declaration de variable
 @addToClass(AST.DeclarationNode)
 def compile(self):
 	resultPython = ""
@@ -133,7 +123,7 @@ def compile(self):
 	resultPython += self.children[1].compile() + "\n"
 	return resultPython
 
-# noeud de boucle while
+# While
 @addToClass(AST.WhileNode)
 def compile(self):
 	resultPython = "while "
@@ -142,30 +132,31 @@ def compile(self):
 	resultPython += "\t" + block.replace("\n", "\n\t")[:-1]
 	return resultPython
 
-# noeud de boucle if
+# If
 @addToClass(AST.IfNode)
 def compile(self):
 	resultPython = "if "
 	resultPython += self.children[0].compile()[:-1] + " :\n"
 	blockIf= self.children[1].compile()
 	resultPython += "\t" + blockIf.replace("\n", "\n\t")[:-1]
-	# test if "else" exist
+	# Test si "else" existe
 	if(len(self.children) == 3):
 		blockElse = self.children[2].compile()
 		resultPython += "else :\n\t" + blockElse.replace("\n", "\n\t")[:-1]
 	return resultPython
 
-# noeud de boucle for
+# For
 @addToClass(AST.ForNode)
 def compile(self):
-	resultPython = "for " + self.value + " in range(" + self.value + ", "
-	resultPython += self.until.compile() + ", "
+	resultPython = "for " + self.value + " in range(int(" + self.value + "), int("
+	resultPython += self.until.compile() + "), "
 	resultPython += "1" if self.inc == "+" else "-1"
 	resultPython += ") :\n"
 	block = self.children[0].compile()
 	resultPython += "\t" + block.replace("\n", "\n\t")[:-1]
 	return resultPython
 
+# Break
 @addToClass(AST.BreakNode)
 def compile(self):
 	return "break\n"
@@ -173,12 +164,15 @@ def compile(self):
 if __name__ == "__main__":
 	from parserLOL import parse
 	import sys, os
+
 	prog = open(sys.argv[1]).read()
+	
 	ast = parse(prog)
-	print(ast)
 	compiled = ast.compile()
 	name = "result.py"   
+	
 	outfile = open(name, 'w')
 	outfile.write(compiled)
 	outfile.close()
+	
 	print ("Wrote output to", name)

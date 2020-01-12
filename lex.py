@@ -1,4 +1,12 @@
+#!/usr/bin/env python
+# coding=utf-8
+
+""" Analyse un fichier écrit en LOLCODE et identifie ses lèxèmes """
+
 import ply.lex as lex
+
+__author__  = "Tristan Seuret, David Rihs"
+__version__ = "1.0.0"
 
 tokens = (
 	'SL_COMMENT','ML_COMMENT',

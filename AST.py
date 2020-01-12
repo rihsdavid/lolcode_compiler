@@ -1,16 +1,12 @@
-# coding: latin-1
+#!/usr/bin/env python
+# coding=utf-8
 
-''' Petit module utilitaire pour la construction, la manipulation et la 
-repr�sentation d'arbres syntaxiques abstraits.
-
-S�rement plein de bugs et autres surprises. � prendre comme un 
-"work in progress"...
-Notamment, l'utilisation de pydot pour repr�senter un arbre syntaxique cousu
-est une utilisation un peu "limite" de graphviz. �a marche, mais le layout n'est
-pas toujours optimal...
-'''
+""" Définit tous les noeuds de l'arbre syntaxique """
 
 import pydot
+
+__author__  = "Tristan Seuret, David Rihs"
+__version__ = "1.0.0"
 
 class Node:
     count = 0
@@ -78,12 +74,6 @@ class Node:
                 edge = pydot.Edge(self.ID,c.ID)
                 edge.set_color(color)
                 edge.set_arrowsize('.5')
-                # Les arr�tes correspondant aux coutures ne sont pas prises en compte
-                # pour le layout du graphe. Ceci permet de garder l'arbre dans sa repr�sentation
-                # "standard", mais peut provoquer des surprises pour le trajet parfois un peu
-                # tarabiscot� des coutures...
-                # En commantant cette ligne, le layout sera bien meilleur, mais l'arbre nettement
-                # moins reconnaissable.
                 edge.set_constraint('false') 
                 if label:
                     edge.set_taillabel(str(i))
@@ -199,17 +189,6 @@ class BreakNode(Node):
     type="break"
     
 def addToClass(cls):
-    ''' D�corateur permettant d'ajouter la fonction d�cor�e en tant que m�thode
-    � une classe.
-    
-    Permet d'impl�menter une forme �l�mentaire de programmation orient�e
-    aspects en regroupant les m�thodes de diff�rentes classes impl�mentant
-    une m�me fonctionnalit� en un seul endroit.
-    
-    Attention, apr�s utilisation de ce d�corateur, la fonction d�cor�e reste dans
-    le namespace courant. Si cela d�range, on peut utiliser del pour la d�truire.
-    Je ne sais pas s'il existe un moyen d'�viter ce ph�nom�ne.
-    '''
     def decorator(func):
         setattr(cls,func.__name__,func)
         return func
