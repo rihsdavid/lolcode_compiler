@@ -68,7 +68,7 @@ def compile(self):
 	# +, -, *, /
 	else:
 		resultPython += self.children[0].compile()
-		resultPython += self.op
+		resultPython += " " + self.op + " "
 		resultPython += self.children[1].compile()
 	
 	return resultPython + "\n"

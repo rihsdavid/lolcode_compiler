@@ -1,28 +1,13 @@
-y = 2.0
-x = 3.0
-x+y
-x-y
-x*y
-x/y
-x % y
-max(x,y)
-min(x,y)
-x+=1
-x-=1
-x == y
-x != y
-True and False
-True or False
-not False
-while x == y :
-	max(x,y)
-	min(x,y)
-	x+=1
-	while x == y :
-		x-y
-		x*y
-	x % y
-	break
-	x-=1
-if x == y :
-	x+y
+# Programme de test 1
+i = 0.0
+a = 10.0
+while i != a :
+	if i == 8.0 :
+		i = 0.0
+		for i in range(int(i), int(a), 1) :
+			a = a - i
+			
+	else :
+		a += 1
+		break
+	i += 1
