@@ -9,8 +9,8 @@ OBTW This is a multiline comment
 TLDR
 
 BTW variables assignement
-I HAS A x ITZ "Three"
 I HAS A y ITZ 2
+I HAS A x ITZ 10
 x R 3
 
 BTW Mathematics operator
