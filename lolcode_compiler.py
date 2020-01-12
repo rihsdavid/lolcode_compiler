@@ -162,7 +162,7 @@ def compile(self):
 	return "break\n"
 
 if __name__ == "__main__":
-	from parserLOL import parse
+	from lolcode_parser import parse
 	import sys, os
 
 	prog = open(sys.argv[1]).read()
